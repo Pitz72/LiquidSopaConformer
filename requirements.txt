@@ -1,0 +1,17 @@
+# LiquidSopaConformer - Dipendenze Python
+# Installazione: pip install -r requirements.txt
+
+# Gestione metadati audio
+mutagen>=1.47.0
+
+# Interfaccia Python per FFmpeg
+ffmpeg-python>=0.2.0
+
+# Elaborazione immagini per artwork
+Pillow>=10.0.0
+
+# Note:
+# - FFmpeg deve essere installato separatamente nel sistema
+# - Su Windows: winget install ffmpeg
+# - Su macOS: brew install ffmpeg  
+# - Su Linux: sudo apt-get install ffmpeg (Ubuntu/Debian) 
