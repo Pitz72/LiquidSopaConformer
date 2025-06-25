@@ -1,17 +1,55 @@
-# LiquidSopaConformer - Dipendenze Python
-# Installazione: pip install -r requirements.txt
+# Audio & Metadata Converter - Harmony Edition v1.0
+# Dipendenze Python per il convertitore audio professionale
+# Sviluppato da Simone Pizzi con assistenza LLM
 
-# Gestione metadati audio
-mutagen>=1.47.0
+# === DIPENDENZE CORE ===
+# Gestione metadati audio e file multimediali
+mutagen>=1.47.0,<2.0.0
 
 # Interfaccia Python per FFmpeg
-ffmpeg-python>=0.2.0
+ffmpeg-python>=0.2.0,<1.0.0
 
-# Elaborazione immagini per artwork
-Pillow>=10.0.0
+# Elaborazione immagini per artwork e icone
+Pillow>=10.0.0,<11.0.0
 
-# Note:
-# - FFmpeg deve essere installato separatamente nel sistema
-# - Su Windows: winget install ffmpeg
-# - Su macOS: brew install ffmpeg  
-# - Su Linux: sudo apt-get install ffmpeg (Ubuntu/Debian) 
+# === DIPENDENZE TESTING ===
+# Monitoring sistema per test performance
+psutil>=5.9.0,<6.0.0
+
+# === DIPENDENZE OPZIONALI ===
+# Per funzionalità avanzate future (commentate per ora)
+# requests>=2.28.0,<3.0.0        # Per aggiornamenti automatici
+# configparser>=5.3.0,<6.0.0     # Per file di configurazione avanzati
+
+# === NOTE INSTALLAZIONE ===
+# 
+# Installazione rapida:
+#   pip install -r requirements.txt
+# 
+# Installazione in ambiente virtuale (consigliata):
+#   python -m venv venv
+#   source venv/bin/activate  # Linux/Mac
+#   venv\Scripts\activate     # Windows
+#   pip install -r requirements.txt
+# 
+# === DIPENDENZE SISTEMA ===
+# 
+# FFmpeg è richiesto come dipendenza di sistema:
+#   Windows: winget install ffmpeg
+#   Linux:   sudo apt install ffmpeg
+#   macOS:   brew install ffmpeg
+# 
+# === COMPATIBILITÀ ===
+# 
+# Python: 3.7+
+# OS: Windows 10+, Ubuntu 20.04+, macOS 10.15+
+# RAM: Minimo 512MB, consigliato 2GB+
+# Spazio: 100MB per software + spazio per conversioni
+# 
+# === VERSIONING ===
+# 
+# Versioni specificate per garantire stabilità e riproducibilità
+# Testato con le versioni indicate nel range specificato
+# 
+# Last updated: 2024-12-20
+# Harmony Edition v1.0 

@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 """
-Liquidsoap Library Optimizer - Versione Fixed
-Script semplificato e robusto per ottimizzare librerie musicali
+Audio & Metadata Converter - Harmony Edition v1.0
+Script professionale per ottimizzare librerie musicali per sistemi radio
+Developed by Simone Pizzi with LLM assistance
 """
+
+# Informazioni sul software
+APP_NAME = "Audio & Metadata Converter"
+APP_VERSION = "1.0"
+VERSION_NAME = "Harmony Edition"
+AUTHOR = "Simone Pizzi"
+FULL_VERSION = f"{APP_NAME} - {VERSION_NAME} v{APP_VERSION}"
 
 import os
 import sys
@@ -210,42 +218,169 @@ class SimpleConformer:
         self.logger.info(f"Errori: {self.stats['errors']}")
 
 def launch_gui():
-    """Lancia una semplice GUI Tkinter per selezionare cartelle e avviare l'ottimizzazione"""
+    """Lancia una GUI elegante con schermata di introduzione"""
     try:
         import tkinter as tk
-        from tkinter import filedialog, messagebox
+        from tkinter import filedialog, messagebox, ttk
         import threading
+        import webbrowser
     except ImportError:
         print("Errore: tkinter non disponibile. Usa la modalità command line.")
         return
 
-    def browse_input():
-        path = filedialog.askdirectory(title='Seleziona cartella di input')
-        if path:
-            input_var.set(path)
+    def show_splash_screen():
+        """Mostra la schermata di introduzione"""
+        splash = tk.Toplevel()
+        splash.title(f"{APP_NAME} - {VERSION_NAME}")
+        splash.geometry('500x700')
+        splash.configure(bg='#1e1e1e')
+        splash.resizable(False, False)
+        
+        # Centra la finestra
+        splash.update_idletasks()
+        x = (splash.winfo_screenwidth() // 2) - (500 // 2)
+        y = (splash.winfo_screenheight() // 2) - (700 // 2)
+        splash.geometry(f'500x700+{x}+{y}')
+        
+        # Frame principale con gradiente simulato
+        main_frame = tk.Frame(splash, bg='#1e1e1e')
+        main_frame.pack(fill='both', expand=True, padx=20, pady=20)
+        
+        # Icona del software
+        try:
+            icon_path = r"C:\Users\Utente\Documents\GitHub\LiquidSopaConformer\audioconv.png"
+            if Path(icon_path).exists():
+                from PIL import Image, ImageTk
+                img = Image.open(icon_path)
+                img = img.resize((80, 80), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(img)
+                icon_label = tk.Label(main_frame, image=photo, bg='#1e1e1e')
+                icon_label.image = photo  # Mantieni riferimento
+                icon_label.pack(pady=(10, 20))
+            else:
+                raise FileNotFoundError("File icona non trovato")
+        except Exception as e:
+            # Fallback se l'icona non è disponibile
+            print(f"Icona non caricata: {e}")
+            icon_label = tk.Label(main_frame, text='🎵', font=('Arial', 48), 
+                                bg='#1e1e1e', fg='#6a9cff')
+            icon_label.pack(pady=(10, 20))
+        
+        # Nome del software
+        title_label = tk.Label(main_frame, text=APP_NAME, 
+                              font=('Segoe UI', 24, 'bold'), 
+                              bg='#1e1e1e', fg='#ffffff')
+        title_label.pack(pady=(0, 5))
+        
+        # Versione
+        version_label = tk.Label(main_frame, text=f"{VERSION_NAME} v{APP_VERSION}", 
+                                font=('Segoe UI', 12), 
+                                bg='#1e1e1e', fg='#6a9cff')
+        version_label.pack(pady=(0, 20))
+        
+        # Separatore elegante
+        separator = tk.Frame(main_frame, height=2, bg='#6a9cff')
+        separator.pack(fill='x', pady=(0, 20))
+        
+        # Autore
+        author_label = tk.Label(main_frame, text=f"Sviluppato da {AUTHOR}", 
+                               font=('Segoe UI', 11, 'bold'), 
+                               bg='#1e1e1e', fg='#ffffff')
+        author_label.pack(pady=(0, 5))
+        
+        # LLM assistance
+        llm_label = tk.Label(main_frame, text="Sviluppatore tramite LLM", 
+                            font=('Segoe UI', 10, 'italic'), 
+                            bg='#1e1e1e', fg='#cccccc')
+        llm_label.pack(pady=(0, 20))
+        
+        # Info software gratuito
+        free_frame = tk.Frame(main_frame, bg='#2d2d2d', relief='solid', bd=1)
+        free_frame.pack(fill='x', pady=(0, 15), padx=10)
+        
+        free_label = tk.Label(free_frame, 
+                             text="✨ Software gratuito e liberamente scaricabile ✨", 
+                             font=('Segoe UI', 11, 'bold'), 
+                             bg='#2d2d2d', fg='#4caf50')
+        free_label.pack(pady=10)
+        
+        # Info donazioni
+        donation_frame = tk.Frame(main_frame, bg='#2d2d2d', relief='solid', bd=1)
+        donation_frame.pack(fill='x', pady=(0, 20), padx=10)
+        
+        donation_text = ("Anche se sviluppato con LLM, questo software\n"
+                        "richiede impegno mentale e ore di lavoro.\n\n"
+                        "Considera una piccola donazione per\n"
+                        "sostenere Runtime Radio:")
+        
+        donation_label = tk.Label(donation_frame, text=donation_text, 
+                                 font=('Segoe UI', 10), 
+                                 bg='#2d2d2d', fg='#ffffff', justify='center')
+        donation_label.pack(pady=(10, 5))
+        
+        def open_donation():
+            webbrowser.open('https://paypal.me/runtimeradio')
+        
+        donation_btn = tk.Button(donation_frame, text='💝 Dona a Runtime Radio', 
+                               command=open_donation,
+                               bg='#ff9800', fg='white', 
+                               font=('Segoe UI', 10, 'bold'),
+                               cursor='hand2', relief='flat',
+                               padx=20, pady=5)
+        donation_btn.pack(pady=(0, 10))
+        
+        # Pulsante per avviare il software
+        def start_main_app():
+            splash.destroy()
+            show_main_window()
+        
+        start_button = tk.Button(main_frame, text='🚀 AVVIA SOFTWARE', 
+                               command=start_main_app,
+                               bg='#6a9cff', fg='white', 
+                               font=('Segoe UI', 14, 'bold'),
+                               cursor='hand2', relief='flat',
+                               width=25, height=2)
+        start_button.pack(pady=20)
+        
+        # Footer
+        footer_label = tk.Label(main_frame, text=f"{FULL_VERSION}", 
+                               font=('Segoe UI', 8), 
+                               bg='#1e1e1e', fg='#666666')
+        footer_label.pack(side='bottom', pady=(20, 0))
+        
+        splash.transient()
+        splash.grab_set()
+        splash.focus_set()
+    
+    def show_main_window():
+        """Mostra la finestra principale"""
+        def browse_input():
+            path = filedialog.askdirectory(title='Seleziona cartella di input')
+            if path:
+                input_var.set(path)
 
-    def browse_output():
-        path = filedialog.askdirectory(title='Seleziona cartella di output')
-        if path:
-            output_var.set(path)
+        def browse_output():
+            path = filedialog.askdirectory(title='Seleziona cartella di output')
+            if path:
+                output_var.set(path)
 
-    def start_process():
-        in_dir = input_var.get()
-        out_dir = output_var.get()
-        if not in_dir or not out_dir:
-            messagebox.showerror('Errore', 'Seleziona sia la cartella di input sia quella di output')
-            return
+        def start_process():
+            in_dir = input_var.get()
+            out_dir = output_var.get()
+            if not in_dir or not out_dir:
+                messagebox.showerror('Errore', 'Seleziona sia la cartella di input sia quella di output')
+                return
 
-        if not Path(in_dir).exists():
-            messagebox.showerror('Errore', f'Directory input non esiste: {in_dir}')
-            return
+            if not Path(in_dir).exists():
+                messagebox.showerror('Errore', f'Directory input non esiste: {in_dir}')
+                return
 
-        def worker():
-            try:
-                conformer = SimpleConformer(in_dir, out_dir)
-                conformer.run()
-                
-                report = f"""✅ Elaborazione completata!
+            def worker():
+                try:
+                    conformer = SimpleConformer(in_dir, out_dir)
+                    conformer.run()
+                    
+                    report = f"""✅ Elaborazione completata!
 
 📊 STATISTICHE:
 • File processati: {conformer.stats['processed']}
@@ -255,64 +390,119 @@ def launch_gui():
 • Errori: {conformer.stats['errors']}
 
 📁 Output salvato in: {out_dir}"""
-                
-                messagebox.showinfo('🎉 Completato!', report)
-            except Exception as exc:
-                messagebox.showerror('❌ Errore', f'Errore durante elaborazione:\n\n{str(exc)}')
+                    
+                    messagebox.showinfo('🎉 Completato!', report)
+                except Exception as exc:
+                    messagebox.showerror('❌ Errore', f'Errore durante elaborazione:\n\n{str(exc)}')
 
-        # Avvia elaborazione in thread separato
-        threading.Thread(target=worker, daemon=True).start()
-        messagebox.showinfo('🚀 Avviato', 'Elaborazione avviata!\n\nVerrà mostrato un messaggio al completamento.\nPuoi controllare il progresso nel terminale.')
+            # Avvia elaborazione in thread separato
+            threading.Thread(target=worker, daemon=True).start()
+            messagebox.showinfo('🚀 Avviato', 'Elaborazione avviata!\n\nVerrà mostrato un messaggio al completamento.\nPuoi controllare il progresso nel terminale.')
 
-    root = tk.Tk()
-    root.title('🎵 Liquidsoap Library Optimizer - Fixed')
-    root.geometry('700x300')
-    root.configure(bg='#f0f0f0')
+        root = tk.Tk()
+        root.title(f'{APP_NAME} - {VERSION_NAME} v{APP_VERSION}')
+        root.geometry('750x550')
+        root.configure(bg='#1e1e1e')
 
-    input_var = tk.StringVar()
-    output_var = tk.StringVar()
+        input_var = tk.StringVar()
+        output_var = tk.StringVar()
 
-    # Header
-    header = tk.Label(root, text='🎵 Liquidsoap Library Optimizer', 
-                      font=('Arial', 16, 'bold'), bg='#f0f0f0', fg='#333')
-    header.grid(row=0, column=0, columnspan=3, pady=15)
+        # Stile moderno
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure('Dark.TEntry', 
+                       fieldbackground='#2d2d2d', 
+                       foreground='#ffffff',
+                       bordercolor='#6a9cff',
+                       insertcolor='#ffffff')
 
-    # Input directory
-    tk.Label(root, text='📂 Cartella di input:', font=('Arial', 10, 'bold'), 
-             bg='#f0f0f0').grid(row=1, column=0, sticky='w', padx=15, pady=5)
-    tk.Entry(root, textvariable=input_var, width=50, font=('Arial', 9)).grid(row=1, column=1, padx=5, pady=5)
-    tk.Button(root, text='Sfoglia', command=browse_input, bg='#2196F3', fg='white', 
-              font=('Arial', 9)).grid(row=1, column=2, padx=5, pady=5)
+        # Header compatto ed elegante
+        header_frame = tk.Frame(root, bg='#2d2d2d', height=50)
+        header_frame.pack(fill='x', padx=20, pady=(15, 10))
+        header_frame.pack_propagate(False)
+        
+        header_label = tk.Label(header_frame, text=f'🎵 {APP_NAME}', 
+                               font=('Segoe UI', 14, 'bold'), 
+                               bg='#2d2d2d', fg='#6a9cff')
+        header_label.pack(expand=True)
 
-    # Output directory
-    tk.Label(root, text='💾 Cartella di output:', font=('Arial', 10, 'bold'), 
-             bg='#f0f0f0').grid(row=2, column=0, sticky='w', padx=15, pady=5)
-    tk.Entry(root, textvariable=output_var, width=50, font=('Arial', 9)).grid(row=2, column=1, padx=5, pady=5)
-    tk.Button(root, text='Sfoglia', command=browse_output, bg='#2196F3', fg='white', 
-              font=('Arial', 9)).grid(row=2, column=2, padx=5, pady=5)
+        # Contenuto principale
+        content_frame = tk.Frame(root, bg='#1e1e1e')
+        content_frame.pack(fill='both', expand=True, padx=20, pady=5)
 
-    # Informazioni
-    info_frame = tk.Frame(root, bg='#e8f4f8', relief='solid', bd=1)
-    info_frame.grid(row=3, column=0, columnspan=3, padx=15, pady=15, sticky='ew')
-    
-    info_text = """ℹ️  Cosa fa questo script:
+        # Input directory
+        input_frame = tk.Frame(content_frame, bg='#1e1e1e')
+        input_frame.pack(fill='x', pady=(0, 10))
+        
+        tk.Label(input_frame, text='📂 Cartella di input:', 
+                font=('Segoe UI', 11, 'bold'), 
+                bg='#1e1e1e', fg='#ffffff').pack(anchor='w', pady=(0, 5))
+        
+        input_row = tk.Frame(input_frame, bg='#1e1e1e')
+        input_row.pack(fill='x')
+        
+        input_entry = tk.Entry(input_row, textvariable=input_var, 
+                              font=('Segoe UI', 10), bg='#2d2d2d', 
+                              fg='#ffffff', insertbackground='#ffffff',
+                              relief='flat', bd=5)
+        input_entry.pack(side='left', fill='x', expand=True, padx=(0, 10))
+        
+        input_btn = tk.Button(input_row, text='Sfoglia', command=browse_input, 
+                             bg='#6a9cff', fg='white', font=('Segoe UI', 10, 'bold'),
+                             relief='flat', cursor='hand2', padx=20)
+        input_btn.pack(side='right')
+
+        # Output directory
+        output_frame = tk.Frame(content_frame, bg='#1e1e1e')
+        output_frame.pack(fill='x', pady=(0, 15))
+        
+        tk.Label(output_frame, text='💾 Cartella di output:', 
+                font=('Segoe UI', 11, 'bold'), 
+                bg='#1e1e1e', fg='#ffffff').pack(anchor='w', pady=(0, 5))
+        
+        output_row = tk.Frame(output_frame, bg='#1e1e1e')
+        output_row.pack(fill='x')
+        
+        output_entry = tk.Entry(output_row, textvariable=output_var, 
+                               font=('Segoe UI', 10), bg='#2d2d2d', 
+                               fg='#ffffff', insertbackground='#ffffff',
+                               relief='flat', bd=5)
+        output_entry.pack(side='left', fill='x', expand=True, padx=(0, 10))
+        
+        output_btn = tk.Button(output_row, text='Sfoglia', command=browse_output, 
+                              bg='#6a9cff', fg='white', font=('Segoe UI', 10, 'bold'),
+                              relief='flat', cursor='hand2', padx=20)
+        output_btn.pack(side='right')
+
+        # Informazioni
+        info_frame = tk.Frame(content_frame, bg='#2d2d2d', relief='solid', bd=1)
+        info_frame.pack(fill='x', pady=(0, 15))
+        
+        info_text = """ℹ️  Funzionalità del convertitore:
 • Trova tutti i file audio nella cartella di input (MP3, FLAC, WAV, M4A, AAC, OGG)
 • Copia i file MP3 già conformi (192kbps CBR, 44.1kHz) senza modifiche
-• Converte tutti gli altri file al formato ottimale per Liquidsoap
+• Converte tutti gli altri file al formato ottimale per sistemi radio
 • Mantiene la struttura delle cartelle nell'output"""
-    
-    tk.Label(info_frame, text=info_text, justify='left', bg='#e8f4f8', 
-             font=('Arial', 9), fg='#555').pack(padx=10, pady=10)
+        
+        tk.Label(info_frame, text=info_text, justify='left', 
+                bg='#2d2d2d', fg='#cccccc',
+                font=('Segoe UI', 9)).pack(padx=12, pady=12)
 
-    # Pulsante avvia
-    start_btn = tk.Button(root, text='🚀 AVVIA ELABORAZIONE', command=start_process, 
-                          bg='#4CAF50', fg='white', font=('Arial', 14, 'bold'), 
-                          width=25, height=2)
-    start_btn.grid(row=4, column=0, columnspan=3, pady=20)
+        # Pulsante avvia
+        start_btn = tk.Button(content_frame, text='🚀 AVVIA ELABORAZIONE', 
+                             command=start_process, 
+                             bg='#4caf50', fg='white', 
+                             font=('Segoe UI', 13, 'bold'), 
+                             relief='flat', cursor='hand2',
+                             width=30, height=2)
+        start_btn.pack(pady=(15, 25))
 
-    # Configura colonne per il resize
-    root.grid_columnconfigure(1, weight=1)
+        root.mainloop()
 
+    # Avvia con schermata di introduzione
+    root = tk.Tk()
+    root.withdraw()  # Nascondi finestra principale
+    show_splash_screen()
     root.mainloop()
 
 def main():

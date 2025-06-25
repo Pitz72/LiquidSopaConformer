@@ -1,0 +1,120 @@
+MIT License
+
+Audio & Metadata Converter - Harmony Edition v1.0
+Copyright (c) 2024 Simone Pizzi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+
+ADDITIONAL TERMS AND CONDITIONS:
+
+1. FREE SOFTWARE
+   This software is completely free and can be downloaded, used, and 
+   distributed without any limitations or costs.
+
+2. COMMERCIAL USE PERMITTED
+   You are explicitly permitted to use this software for commercial purposes,
+   including but not limited to:
+   - Radio stations and broadcasting
+   - Audio production services
+   - Music distribution platforms
+   - Professional audio applications
+
+3. MODIFICATION AND REDISTRIBUTION
+   You are permitted to:
+   - Modify the source code
+   - Create derivative works
+   - Redistribute modified versions
+   - Include in larger projects
+   
+   PROVIDED THAT you maintain this license notice and attribution to the
+   original author.
+
+4. NO OBLIGATIONS
+   You are NOT required to:
+   - Pay any licensing fees
+   - Share your modifications (though encouraged)
+   - Provide attribution beyond the license requirements
+   - Support or maintain derivative works
+
+5. ATTRIBUTION PREFERRED
+   While not legally required, attribution is appreciated:
+   "Powered by Audio & Metadata Converter by Simone Pizzi"
+
+6. SUPPORT AND DONATIONS
+   While the software is free, voluntary support is appreciated:
+   - Development support: https://paypal.me/runtimeradio
+   - Community support: Through documentation and sharing
+
+================================================================================
+
+THIRD-PARTY COMPONENTS:
+
+This software relies on the following third-party components with their own licenses:
+
+- Python: Python Software Foundation License
+- FFmpeg: GNU Lesser General Public License (LGPL) v2.1+
+- Mutagen: GNU General Public License (GPL) v2+
+- Pillow: Historical Permission Notice and Disclaimer (HPND)
+- Tkinter: Python Software Foundation License
+
+Users are responsible for complying with the licenses of these components
+when distributing this software.
+
+================================================================================
+
+DISCLAIMER:
+
+This software is provided "AS IS" without warranty of any kind. The author
+makes no representations or warranties about the suitability of this software
+for any particular purpose. In no event shall the author be liable for any
+damages arising from the use of this software.
+
+Users are strongly encouraged to:
+- Backup all audio files before processing
+- Test the software on small samples before bulk processing
+- Verify output quality before discarding original files
+- Ensure compliance with copyright laws and licensing agreements
+
+================================================================================
+
+DEVELOPMENT INFORMATION:
+
+Project: Audio & Metadata Converter - Harmony Edition
+Version: 1.0
+Developer: Simone Pizzi
+Development Method: Assisted by Large Language Model
+License Date: December 20, 2024
+Original Project: LiquidSopaConformer (deprecated name)
+
+For the latest version and documentation, visit the project repository.
+
+Contact: Through Runtime Radio (https://paypal.me/runtimeradio)
+
+================================================================================
+
+This license grants you maximum freedom to use, modify, and distribute this
+software while protecting the original author and recognizing the open-source
+components that make this project possible.
+
+Enjoy using Audio & Metadata Converter!
+
+- Simone Pizzi
+  December 2024 

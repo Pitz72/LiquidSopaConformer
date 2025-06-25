@@ -1,151 +1,254 @@
-# 🎵 LiquidSopaConformer
+# 🎵 Audio & Metadata Converter - Harmony Edition v1.0
 
-**Ottimizzatore di Librerie Musicali per Liquidsoap/AzuraCast**
+**Convertitore professionale per ottimizzare librerie musicali per sistemi radio**
 
-Un tool potente e robusto per standardizzare e ottimizzare librerie musicali per l'uso con software di automazione radio come Liquidsoap e AzuraCast.
+Sviluppato da **Simone Pizzi** con assistenza LLM
 
-## 🎯 Caratteristiche Principali
+## 📋 Panoramica
 
-- **🔄 Conversione Intelligente**: Converte automaticamente file audio non conformi al formato ottimale
-- **📋 File Conformi**: Riconosce e copia senza modifiche i file MP3 già conformi (192kbps CBR, 44.1kHz)
-- **🗂️ Struttura Preservata**: Mantiene l'organizzazione originale delle cartelle
-- **🖥️ Interfaccia Grafica**: GUI user-friendly con Tkinter per facilità d'uso
-- **📊 Reporting Dettagliato**: Log completi e statistiche di elaborazione
-- **⚡ Performance**: Elaborazione sequenziale ottimizzata per stabilità
+Audio & Metadata Converter è uno strumento professionale progettato per ottimizzare librerie musicali per l'uso con software di automazione radiofonica come Liquidsoap, AzuraCast e altri sistemi broadcasting. Il software converte automaticamente i file audio nel formato ottimale garantendo qualità uniforme e compatibilità massima.
 
-## 📋 Formati Supportati
+## ✨ Caratteristiche Principali
 
-**Input**: MP3, FLAC, WAV, M4A, AAC, OGG
-**Output**: MP3 (192kbps CBR, 44.1kHz stereo)
+### 🎯 Conversione Intelligente
+- **Rilevamento automatico**: Identifica i file già conformi agli standard radio
+- **Copia diretta**: I file MP3 già ottimali vengono copiati senza riprocessamento
+- **Conversione selettiva**: Solo i file non conformi vengono convertiti
+- **Preservazione struttura**: Mantiene l'organizzazione delle cartelle originali
 
-## 🚀 Requisiti di Sistema
+### 🔧 Formati Supportati
+- **Input**: MP3, FLAC, WAV, M4A, AAC, OGG
+- **Output**: MP3 192kbps CBR, 44.1kHz Stereo (standard radio professionale)
 
-- **Python 3.7+**
-- **FFmpeg** (installato automaticamente su Windows tramite winget)
-- **Dipendenze Python**: 
-  - `mutagen` - Gestione metadati audio
-  - `ffmpeg-python` - Interfaccia Python per FFmpeg
-  - `Pillow` - Elaborazione immagini per artwork
+### 🖥️ Interfacce Multiple
+- **GUI Elegante**: Interfaccia grafica moderna con tema dark
+- **Splash Screen**: Schermata di introduzione con informazioni complete
+- **Command Line**: Supporto completo per automazione e scripting
 
-## 📦 Installazione
+### ⚡ Prestazioni Ottimizzate
+- **Auto-detection FFmpeg**: Trova automaticamente FFmpeg nel sistema
+- **Elaborazione sequenziale**: Processamento stabile e robusto
+- **Gestione errori avanzata**: Logging completo e recovery automatico
 
-### 1. Clona il Repository
+## 🔧 Installazione e Utilizzo
+
+### 💻 **Windows - Versione Eseguibile (CONSIGLIATO)**
+
+La versione più semplice per utenti Windows:
+
+1. **Scarica** l'archivio `AudioMetadataConverter-v1.0-Free.zip`
+2. **Estrai** la cartella `AMC-Free`
+3. **Doppio click** su `AudioMetadataConverter.exe`
+4. **Il software si avvia immediatamente!**
+
+✅ **Vantaggi dell'eseguibile:**
+- Nessuna installazione Python richiesta
+- Nessuna configurazione dipendenze
+- Avvio istantaneo
+- Include tutte le librerie necessarie
+
+### 📁 **Distribuzione Completa AMC-Free**
+
+La cartella `AMC-Free` contiene:
+- **`AudioMetadataConverter.exe`** - Eseguibile Windows standalone
+- **Script multi-platform** per Mac e Linux
+- **Documentazione completa** (guide, disclaimer, licenza)
+- **Tutto il necessario** per uso immediato
+
+### 🔧 **Installazione da Codice Sorgente**
+
+Per sviluppatori o sistemi non-Windows:
+
+#### Prerequisiti
+- Python 3.7+
+- FFmpeg (installato automaticamente o manualmente)
+
+#### Installazione Dipendenze
 ```bash
-git clone https://github.com/tuonome/LiquidSopaConformer.git
-cd LiquidSopaConformer
+pip install -r requirements.txt
 ```
 
-### 2. Installa le Dipendenze
-```bash
-pip install mutagen ffmpeg-python pillow
-```
-
-### 3. Installa FFmpeg (Windows)
+#### Verifica FFmpeg
+Il software rileva automaticamente FFmpeg. Su Windows con WinGet:
 ```bash
 winget install ffmpeg
 ```
 
-## 🎮 Utilizzo
+## 🚀 Utilizzo
 
-### Interfaccia Grafica (Consigliato)
+### 💻 **Windows (Eseguibile)**
+```
+Doppio click su AudioMetadataConverter.exe
+```
+
+### 🖥️ **Interfaccia Grafica (Da Codice)**
+```bash
+python conformer.py
+```
+o
 ```bash
 python conformer.py --gui
 ```
 
-### Riga di Comando
+### Command Line
 ```bash
-python conformer.py "path/to/input" "path/to/output"
+python conformer.py /percorso/input /percorso/output
 ```
 
-### Parametri Disponibili
-- `--gui`: Avvia l'interfaccia grafica
-- `--help`: Mostra l'aiuto completo
+### Esempi Pratici
 
-## 🔧 Come Funziona
+#### Conversione Libreria Completa
+```bash
+# Windows
+python conformer.py "C:\Musica\Originale" "C:\Musica\Radio"
 
-1. **Scansione**: Analizza ricorsivamente la directory di input
-2. **Classificazione**: Distingue tra file conformi e non conformi
-3. **Elaborazione**:
-   - **File conformi**: Copiati direttamente senza modifiche
-   - **File non conformi**: Convertiti al formato target
-4. **Output**: Salva i risultati mantenendo la struttura delle cartelle
+# Linux/Mac
+python conformer.py "/home/user/musica" "/home/user/radio"
+```
 
-## 📊 Specifiche Tecniche
+## 📊 Output e Statistiche
 
-### Formato Target Ottimale per Liquidsoap/AzuraCast
-- **Codec**: MP3 (MPEG-1 Layer 3)
-- **Bitrate**: 192 kbps CBR (Constant Bitrate)
-- **Sample Rate**: 44.1 kHz
+Il software fornisce report dettagliati:
+- **File processati**: Totale file elaborati
+- **File copiati**: MP3 già conformi (nessuna conversione)
+- **File convertiti**: File trasformati nel formato target
+- **File saltati**: File non audio o già esistenti
+- **Errori**: Problemi riscontrati durante l'elaborazione
+
+## 🎵 Standard di Conversione
+
+### Target Format
+- **Codec**: MP3 (MPEG-1 Audio Layer III)
+- **Bitrate**: 192 kbps CBR (Constant Bit Rate)
+- **Frequenza**: 44.1 kHz
 - **Canali**: Stereo (2 canali)
-- **Metadati**: ID3v2.3, puliti e ottimizzati
+- **Qualità**: Ottimale per broadcasting radio
 
-### Vantaggi del Formato Target
-- ✅ **Compatibilità universale** con tutti i player
-- ✅ **Qualità audio elevata** per lo streaming
-- ✅ **Bitrate costante** per calcoli precisi della durata
-- ✅ **Overhead minimo** per server di streaming
-- ✅ **Latenza ridotta** per live broadcasting
+### Logica di Elaborazione
+1. **Scansione**: Trova tutti i file audio nella directory input
+2. **Analisi**: Verifica se i file MP3 sono già conformi
+3. **Routing**:
+   - File conformi → Copia diretta
+   - File non conformi → Conversione + copia
+   - File non audio → Ignorati
+4. **Output**: Struttura identica con file ottimizzati
 
-## 📝 File di Log
+## 🔍 Risoluzione Problemi
 
-Il programma genera automaticamente:
-- `conformer_fixed.log`: Log dettagliato dell'elaborazione
-- Report statistiche al completamento
+### Errore FFmpeg Non Trovato
+```bash
+# Windows (WinGet)
+winget install ffmpeg
 
-## 🛠️ Risoluzione Problemi
+# Windows (Chocolatey)
+choco install ffmpeg
 
-### FFmpeg non trovato
-Se ricevi errori riguardo FFmpeg:
-1. Riavvia il terminale dopo l'installazione
-2. Verifica l'installazione: `ffmpeg -version`
-3. Su Windows, potrebbe essere necessario riavviare completamente
+# Linux (Ubuntu/Debian)
+sudo apt install ffmpeg
 
-### Errori di permessi
-- Assicurati di avere permessi di scrittura nella directory di output
-- Esegui come amministratore se necessario
+# macOS (Homebrew)
+brew install ffmpeg
+```
 
-### File non elaborati
-- Controlla che i file di input esistano e siano accessibili
-- Verifica che non siano protetti da DRM
+### Problemi di Permessi
+- Assicurati di avere permessi di lettura sulla cartella input
+- Assicurati di avere permessi di scrittura sulla cartella output
+- Su Linux/Mac potrebbe essere necessario `chmod +x conformer.py`
 
-## 🧪 Test e Qualità
+### File Non Processati
+- Verifica che i file siano in formati supportati
+- Controlla il log `conformer.log` per dettagli specifici
+- Assicurati che FFmpeg sia accessibile nel PATH
 
-Il progetto include:
-- ✅ Gestione robusta degli errori
-- ✅ Logging completo per debugging
-- ✅ Validazione input/output
-- ✅ Testing su diverse tipologie di file
+## 📁 Struttura Progetto
+
+```
+LiquidSopaConformer/
+├── conformer.py                          # Script principale
+├── requirements.txt                      # Dipendenze Python
+├── README.md                            # Documentazione
+├── LICENSE                              # Licenza
+├── CHANGELOG.md                         # Cronologia versioni
+├── test_conformer.py                    # Test di regressione
+├── SOFTWARE_STATUS.md                   # Stato e anti-regressione
+├── .gitignore                           # Esclusioni Git
+├── audioconv.png                        # Icona applicazione
+├── AMC-Free/                            # 📦 DISTRIBUZIONE COMPLETA
+│   ├── AudioMetadataConverter.exe       # 🚀 Eseguibile Windows
+│   ├── AudioConverter-Windows.bat       # Script Windows alternativo
+│   ├── AudioConverter-Mac.sh            # Script macOS
+│   ├── AudioConverter-Linux.sh          # Script Linux
+│   ├── README.md                        # Guida distribuzione
+│   ├── CHE_COS_E.md                     # Cosa è il software
+│   ├── COME_FUNZIONA.md                 # Come funziona
+│   ├── COME_AVVIARE.md                  # Istruzioni avvio
+│   ├── DISCLAIMER.md                    # Responsabilità e backup
+│   ├── LICENSE.txt                      # Licenza MIT
+│   ├── DISTRIBUZIONE.md                 # Summary distribuzione
+│   └── audioconv.png                    # Icona software
+└── AudioMetadataConverter-v1.0-Free.zip # 📦 Archivio distribuzione
+```
+
+## 🧪 Testing
+
+### Test Base
+```bash
+python test_conformer.py
+```
+
+### Test su Directory Piccola
+Prima di processare librerie enormi, testa su una sottocartella:
+```bash
+python conformer.py "C:\Test\Input" "C:\Test\Output"
+```
+
+## 📝 Logging
+
+Il software genera log dettagliati in `conformer.log`:
+- Timestamp di ogni operazione
+- File processati con successo
+- Errori e warning dettagliati
+- Statistiche finali
 
 ## 🤝 Contributi
 
-I contributi sono benvenuti! Per contribuire:
+Questo software è stato sviluppato da **Simone Pizzi** utilizzando assistenza LLM. 
 
-1. Fork del repository
-2. Crea un branch per la tua feature (`git checkout -b feature/nuova-feature`)
-3. Commit delle modifiche (`git commit -am 'Aggiunge nuova feature'`)
-4. Push del branch (`git push origin feature/nuova-feature`)
-5. Apri una Pull Request
+### Supporto Progetto
+Se questo software ti è utile, considera una donazione per sostenere **Runtime Radio**:
+💝 [Dona su PayPal](https://paypal.me/runtimeradio)
 
-## 📄 Licenza
+Anche se sviluppato con LLM, questo progetto richiede impegno mentale significativo e ore di lavoro per perfezionamento e testing.
 
-Questo progetto è rilasciato sotto licenza MIT. Vedi il file `LICENSE` per i dettagli.
+## 📜 Licenza
 
-## 🙏 Riconoscimenti
+Questo software è distribuito sotto licenza MIT. Vedi il file `LICENSE` per dettagli completi.
 
-- **FFmpeg** - Per l'eccellente engine di conversione audio
-- **Mutagen** - Per la gestione avanzata dei metadati
-- **Community Liquidsoap** - Per l'ispirazione e i feedback
+## 🔄 Cronologia Versioni
+
+### v1.0 "Harmony Edition" (Corrente)
+- Interfaccia grafica completamente ridisegnata
+- Tema dark mode elegante
+- Splash screen con informazioni complete
+- Auto-detection FFmpeg migliorata
+- Elaborazione sequenziale stabile
+- Documentazione completa
+- Testing anti-regressione
+
+## 📞 Supporto
+
+Per problemi, bug report o richieste di funzionalità:
+1. Controlla la sezione "Risoluzione Problemi"
+2. Verifica il file `conformer.log`
+3. Assicurati di avere l'ultima versione
+4. Crea un issue dettagliato con:
+   - Sistema operativo
+   - Versione Python
+   - Output di errore completo
+   - Passi per riprodurre il problema
 
 ---
 
-**Sviluppato con ❤️ per la community di radio streaming italiana**
-
-### 📞 Supporto
-
-Per problemi, suggerimenti o domande:
-- 🐛 [Apri un Issue](https://github.com/tuonome/LiquidSopaConformer/issues)
-- 💬 [Discussioni](https://github.com/tuonome/LiquidSopaConformer/discussions)
-
----
-
-*Ultimo aggiornamento: Dicembre 2024* 
+**Audio & Metadata Converter - Harmony Edition v1.0**  
+*Software professionale per l'ottimizzazione di librerie musicali radio*  
+*Sviluppato con ❤️ da Simone Pizzi* 
