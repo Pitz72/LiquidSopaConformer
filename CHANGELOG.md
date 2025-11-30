@@ -49,6 +49,9 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 - **Layout GUI**: Pulsante "AVVIA ELABORAZIONE" sempre completamente visibile
 - **Crash su File Corrotti**: Gestione graceful degli errori di file danneggiati
 - **Compatibilità Windows**: Migliorato supporto per percorsi con spazi e caratteri speciali
+- **Crash GUI all'Avvio**: Risolto problema critico di `transient` window su alcuni sistemi
+- **Visualizzazione Percorsi**: Corretto aggiornamento campi input/output nella GUI
+- **Progress Bar**: Implementato aggiornamento thread-safe fluido
 
 #### Technical Details
 - **Python 3.7+**: Compatibilità garantita

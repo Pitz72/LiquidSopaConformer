@@ -1,38 +1,3 @@
-#!/usr/bin/env python3
-"""
-Audio & Metadata Converter - Harmony Edition v1.0
-Script professionale per ottimizzare librerie musicali per sistemi radio
-Developed by Simone Pizzi with LLM assistance
-"""
-
-# Informazioni sul software
-APP_NAME = "Audio & Metadata Converter"
-APP_VERSION = "1.0"
-VERSION_NAME = "Harmony Edition"
-AUTHOR = "Simone Pizzi"
-FULL_VERSION = f"{APP_NAME} - {VERSION_NAME} v{APP_VERSION}"
-
-import os
-import sys
-import json
-import logging
-import argparse
-from pathlib import Path
-import shutil
-
-try:
-    import ffmpeg
-    import mutagen
-    from mutagen.mp3 import MP3
-    from mutagen.id3 import ID3, TIT2, TPE1, TALB, TDRC, TCON, APIC
-    from mutagen.flac import FLAC
-    from PIL import Image
-    import io
-except ImportError as e:
-    print(f"Errore: Modulo mancante {e}")
-    print("Installa le dipendenze con: pip install mutagen ffmpeg-python pillow")
-    sys.exit(1)
-
 class SimpleConformer:
     """Versione semplificata e robusta del conformer"""
     
@@ -42,9 +7,11 @@ class SimpleConformer:
     # Percorso FFmpeg - auto-detection
     FFMPEG_PATH = None  # Verrà configurato automaticamente in __init__
     
-    def __init__(self, input_dir: str, output_dir: str):
+    def __init__(self, input_dir: str, output_dir: str, progress_callback=None):
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
+        self.progress_callback = progress_callback
+        self.stop_requested = False
         self.stats = {
             'processed': 0,
             'copied': 0,
@@ -67,6 +34,10 @@ class SimpleConformer:
         )
         self.logger = logging.getLogger(__name__)
     
+    def stop(self):
+        """Richiede l'interruzione del processo"""
+        self.stop_requested = True
+
     def _find_ffmpeg(self) -> str:
         """Auto-detection del percorso FFmpeg"""
         import subprocess
@@ -197,17 +168,26 @@ class SimpleConformer:
         # Trova tutti i file
         all_files = list(self.input_dir.rglob("*"))
         audio_files = [f for f in all_files if f.is_file() and f.suffix.lower() in self.SUPPORTED_FORMATS]
+        total_files = len(audio_files)
         
-        self.logger.info(f"File audio trovati: {len(audio_files)}")
+        self.logger.info(f"File audio trovati: {total_files}")
         
         # Processa file uno alla volta
         for i, file_path in enumerate(audio_files, 1):
-            self.logger.info(f"[{i}/{len(audio_files)}] {file_path.name}")
+            if self.stop_requested:
+                self.logger.info("Elaborazione interrotta dall'utente.")
+                break
+
+            self.logger.info(f"[{i}/{total_files}] {file_path.name}")
             self.process_single_file(file_path)
+            
+            # Callback per aggiornare la GUI
+            if self.progress_callback:
+                self.progress_callback(i, total_files, file_path.name)
             
             # Progress ogni 50 file
             if i % 50 == 0:
-                self.logger.info(f"Progresso: {i}/{len(audio_files)} - Errori: {self.stats['errors']}")
+                self.logger.info(f"Progresso: {i}/{total_files} - Errori: {self.stats['errors']}")
         
         # Report finale
         self.logger.info("=== ELABORAZIONE COMPLETATA ===")
@@ -222,15 +202,229 @@ def launch_gui():
     try:
         import tkinter as tk
         from tkinter import filedialog, messagebox, ttk
-        import threading
         import webbrowser
+        from PIL import Image, ImageTk
     except ImportError:
-        print("Errore: tkinter non disponibile. Usa la modalità command line.")
+        print("Errore: tkinter o PIL non disponibile. Usa la modalità command line.")
         return
+
+    # Setup root window
+    root = tk.Tk()
+    root.title(f'{APP_NAME} - {VERSION_NAME} v{APP_VERSION}')
+    root.geometry('750x650')
+    root.configure(bg='#1e1e1e')
+    root.withdraw() # Nascondi inizialmente per lo splash screen
+
+    # Variabili globali GUI
+    input_var = tk.StringVar()
+    output_var = tk.StringVar()
+    progress_var = tk.IntVar()
+    status_var = tk.StringVar(value="Pronto")
+    current_conformer = None
+
+    def setup_main_window():
+        """Configura la finestra principale dopo lo splash screen"""
+        
+        # Stile moderno
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure('Dark.TEntry', 
+                       fieldbackground='#2d2d2d', 
+                       foreground='#ffffff',
+                       bordercolor='#6a9cff',
+                       insertcolor='#ffffff')
+        # Stile Progress Bar
+        style.configure("Horizontal.TProgressbar", background='#4caf50', troughcolor='#2d2d2d', bordercolor='#2d2d2d', lightcolor='#4caf50', darkcolor='#4caf50')
+
+        # Header compatto ed elegante
+        header_frame = tk.Frame(root, bg='#2d2d2d', height=50)
+        header_frame.pack(fill='x', padx=20, pady=(15, 10))
+        header_frame.pack_propagate(False)
+        
+        header_label = tk.Label(header_frame, text=f'🎵 {APP_NAME}', 
+                               font=('Segoe UI', 14, 'bold'), 
+                               bg='#2d2d2d', fg='#6a9cff')
+        header_label.pack(expand=True)
+
+        # Contenuto principale
+        content_frame = tk.Frame(root, bg='#1e1e1e')
+        content_frame.pack(fill='both', expand=True, padx=20, pady=5)
+
+        # Input directory
+        input_frame = tk.Frame(content_frame, bg='#1e1e1e')
+        input_frame.pack(fill='x', pady=(0, 10))
+        
+        tk.Label(input_frame, text='📂 Cartella di input:', 
+                font=('Segoe UI', 11, 'bold'), 
+                bg='#1e1e1e', fg='#ffffff').pack(anchor='w', pady=(0, 5))
+        
+        input_row = tk.Frame(input_frame, bg='#1e1e1e')
+        input_row.pack(fill='x')
+        
+        def browse_input():
+            path = filedialog.askdirectory(title='Seleziona cartella di input')
+            if path:
+                input_var.set(path)
+
+        input_entry = tk.Entry(input_row, textvariable=input_var, 
+                              font=('Segoe UI', 10), bg='#2d2d2d', 
+                              fg='#ffffff', insertbackground='#ffffff',
+                              relief='flat', bd=5)
+        input_entry.pack(side='left', fill='x', expand=True, padx=(0, 10))
+        
+        input_btn = tk.Button(input_row, text='Sfoglia', command=browse_input, 
+                             bg='#6a9cff', fg='white', font=('Segoe UI', 10, 'bold'),
+                             relief='flat', cursor='hand2', padx=20)
+        input_btn.pack(side='right')
+
+        # Output directory
+        output_frame = tk.Frame(content_frame, bg='#1e1e1e')
+        output_frame.pack(fill='x', pady=(0, 15))
+        
+        tk.Label(output_frame, text='💾 Cartella di output:', 
+                font=('Segoe UI', 11, 'bold'), 
+                bg='#1e1e1e', fg='#ffffff').pack(anchor='w', pady=(0, 5))
+        
+        output_row = tk.Frame(output_frame, bg='#1e1e1e')
+        output_row.pack(fill='x')
+        
+        def browse_output():
+            path = filedialog.askdirectory(title='Seleziona cartella di output')
+            if path:
+                output_var.set(path)
+
+        output_entry = tk.Entry(output_row, textvariable=output_var, 
+                               font=('Segoe UI', 10), bg='#2d2d2d', 
+                               fg='#ffffff', insertbackground='#ffffff',
+                               relief='flat', bd=5)
+        output_entry.pack(side='left', fill='x', expand=True, padx=(0, 10))
+        
+        output_btn = tk.Button(output_row, text='Sfoglia', command=browse_output, 
+                              bg='#6a9cff', fg='white', font=('Segoe UI', 10, 'bold'),
+                              relief='flat', cursor='hand2', padx=20)
+        output_btn.pack(side='right')
+
+        # Informazioni
+        info_frame = tk.Frame(content_frame, bg='#2d2d2d', relief='solid', bd=1)
+        info_frame.pack(fill='x', pady=(0, 15))
+        
+        info_text = """ℹ️  Funzionalità del convertitore:
+• Trova tutti i file audio nella cartella di input (MP3, FLAC, WAV, M4A, AAC, OGG)
+• Copia i file MP3 già conformi (192kbps CBR, 44.1kHz) senza modifiche
+• Converte tutti gli altri file al formato ottimale per sistemi radio
+• Mantiene la struttura delle cartelle nell'output"""
+        
+        tk.Label(info_frame, text=info_text, justify='left', 
+                bg='#2d2d2d', fg='#cccccc',
+                font=('Segoe UI', 9)).pack(padx=12, pady=12)
+
+        # Progress Section
+        progress_frame = tk.Frame(content_frame, bg='#1e1e1e')
+        progress_frame.pack(fill='x', pady=(0, 10))
+
+        status_label = tk.Label(progress_frame, textvariable=status_var,
+                               font=('Segoe UI', 9), bg='#1e1e1e', fg='#aaaaaa', anchor='w')
+        status_label.pack(fill='x', pady=(0, 5))
+
+        progress_bar = ttk.Progressbar(progress_frame, variable=progress_var, maximum=100, style="Horizontal.TProgressbar")
+        progress_bar.pack(fill='x', ipady=5)
+
+        # Pulsanti Azione
+        action_frame = tk.Frame(content_frame, bg='#1e1e1e')
+        action_frame.pack(pady=(15, 25))
+
+        def update_progress(current, total, filename):
+            """Callback thread-safe per aggiornare la GUI"""
+            def _update():
+                progress_var.set(current)
+                progress_bar['maximum'] = total
+                status_var.set(f"Elaborazione: {filename} ({current}/{total})")
+            root.after(0, _update)
+
+        def stop_process():
+            """Interrompe il processo"""
+            nonlocal current_conformer
+            if current_conformer:
+                current_conformer.stop()
+                status_var.set("Interruzione in corso...")
+                stop_btn['state'] = 'disabled'
+
+        def start_process():
+            nonlocal current_conformer
+            in_dir = input_var.get()
+            out_dir = output_var.get()
+            if not in_dir or not out_dir:
+                messagebox.showerror('Errore', 'Seleziona sia la cartella di input sia quella di output')
+                return
+
+            if not Path(in_dir).exists():
+                messagebox.showerror('Errore', f'Directory input non esiste: {in_dir}')
+                return
+
+            # Reset UI
+            start_btn['state'] = 'disabled'
+            stop_btn['state'] = 'normal'
+            progress_var.set(0)
+            status_var.set("Avvio elaborazione...")
+
+            def worker():
+                nonlocal current_conformer
+                try:
+                    current_conformer = SimpleConformer(in_dir, out_dir, progress_callback=update_progress)
+                    current_conformer.run()
+                    
+                    if current_conformer.stop_requested:
+                        msg_title = 'Interrotto'
+                        msg_body = 'Elaborazione interrotta dall\'utente.'
+                    else:
+                        msg_title = '🎉 Completato!'
+                        msg_body = f"""✅ Elaborazione completata!
+
+📊 STATISTICHE:
+• File processati: {current_conformer.stats['processed']}
+• File copiati (già conformi): {current_conformer.stats['copied']}
+• File convertiti: {current_conformer.stats['converted']}
+• File saltati: {current_conformer.stats['skipped']}
+• Errori: {current_conformer.stats['errors']}
+
+📁 Output salvato in: {out_dir}"""
+                    
+                    # Reset UI nel thread principale
+                    root.after(0, lambda: messagebox.showinfo(msg_title, msg_body))
+                except Exception as exc:
+                    root.after(0, lambda: messagebox.showerror('❌ Errore', f'Errore durante elaborazione:\n\n{str(exc)}'))
+                finally:
+                    # Riabilita pulsanti
+                    root.after(0, lambda: start_btn.config(state='normal'))
+                    root.after(0, lambda: stop_btn.config(state='disabled'))
+                    root.after(0, lambda: status_var.set("Pronto"))
+                    current_conformer = None
+
+            # Avvia elaborazione in thread separato
+            threading.Thread(target=worker, daemon=True).start()
+
+        start_btn = tk.Button(action_frame, text='🚀 AVVIA ELABORAZIONE', 
+                             command=start_process, 
+                             bg='#4caf50', fg='white', 
+                             font=('Segoe UI', 13, 'bold'), 
+                             relief='flat', cursor='hand2',
+                             width=25, height=2)
+        start_btn.pack(side='left', padx=10)
+
+        stop_btn = tk.Button(action_frame, text='⏹ STOP', 
+                            command=stop_process, 
+                            bg='#f44336', fg='white', 
+                            font=('Segoe UI', 13, 'bold'), 
+                            relief='flat', cursor='hand2',
+                            width=10, height=2, state='disabled')
+        stop_btn.pack(side='left', padx=10)
+
+        # Mostra la finestra
+        root.deiconify()
 
     def show_splash_screen():
         """Mostra la schermata di introduzione"""
-        splash = tk.Toplevel()
+        splash = tk.Toplevel(root)
         splash.title(f"{APP_NAME} - {VERSION_NAME}")
         splash.geometry('500x700')
         splash.configure(bg='#1e1e1e')
@@ -248,9 +442,9 @@ def launch_gui():
         
         # Icona del software
         try:
-            icon_path = r"C:\Users\Utente\Documents\GitHub\LiquidSopaConformer\audioconv.png"
+            # Usa get_resource_path per trovare l'icona
+            icon_path = get_resource_path("audioconv.png")
             if Path(icon_path).exists():
-                from PIL import Image, ImageTk
                 img = Image.open(icon_path)
                 img = img.resize((80, 80), Image.Resampling.LANCZOS)
                 photo = ImageTk.PhotoImage(img)
@@ -332,7 +526,7 @@ def launch_gui():
         # Pulsante per avviare il software
         def start_main_app():
             splash.destroy()
-            show_main_window()
+            setup_main_window()
         
         start_button = tk.Button(main_frame, text='🚀 AVVIA SOFTWARE', 
                                command=start_main_app,
@@ -348,162 +542,21 @@ def launch_gui():
                                bg='#1e1e1e', fg='#666666')
         footer_label.pack(side='bottom', pady=(20, 0))
         
-        splash.transient()
+        # Gestione chiusura splash
+        def on_close():
+            root.destroy()
+            
+        splash.protocol("WM_DELETE_WINDOW", on_close)
         splash.grab_set()
         splash.focus_set()
-    
-    def show_main_window():
-        """Mostra la finestra principale"""
-        def browse_input():
-            path = filedialog.askdirectory(title='Seleziona cartella di input')
-            if path:
-                input_var.set(path)
-
-        def browse_output():
-            path = filedialog.askdirectory(title='Seleziona cartella di output')
-            if path:
-                output_var.set(path)
-
-        def start_process():
-            in_dir = input_var.get()
-            out_dir = output_var.get()
-            if not in_dir or not out_dir:
-                messagebox.showerror('Errore', 'Seleziona sia la cartella di input sia quella di output')
-                return
-
-            if not Path(in_dir).exists():
-                messagebox.showerror('Errore', f'Directory input non esiste: {in_dir}')
-                return
-
-            def worker():
-                try:
-                    conformer = SimpleConformer(in_dir, out_dir)
-                    conformer.run()
-                    
-                    report = f"""✅ Elaborazione completata!
-
-📊 STATISTICHE:
-• File processati: {conformer.stats['processed']}
-• File copiati (già conformi): {conformer.stats['copied']}
-• File convertiti: {conformer.stats['converted']}
-• File saltati: {conformer.stats['skipped']}
-• Errori: {conformer.stats['errors']}
-
-📁 Output salvato in: {out_dir}"""
-                    
-                    messagebox.showinfo('🎉 Completato!', report)
-                except Exception as exc:
-                    messagebox.showerror('❌ Errore', f'Errore durante elaborazione:\n\n{str(exc)}')
-
-            # Avvia elaborazione in thread separato
-            threading.Thread(target=worker, daemon=True).start()
-            messagebox.showinfo('🚀 Avviato', 'Elaborazione avviata!\n\nVerrà mostrato un messaggio al completamento.\nPuoi controllare il progresso nel terminale.')
-
-        root = tk.Tk()
-        root.title(f'{APP_NAME} - {VERSION_NAME} v{APP_VERSION}')
-        root.geometry('750x550')
-        root.configure(bg='#1e1e1e')
-
-        input_var = tk.StringVar()
-        output_var = tk.StringVar()
-
-        # Stile moderno
-        style = ttk.Style()
-        style.theme_use('clam')
-        style.configure('Dark.TEntry', 
-                       fieldbackground='#2d2d2d', 
-                       foreground='#ffffff',
-                       bordercolor='#6a9cff',
-                       insertcolor='#ffffff')
-
-        # Header compatto ed elegante
-        header_frame = tk.Frame(root, bg='#2d2d2d', height=50)
-        header_frame.pack(fill='x', padx=20, pady=(15, 10))
-        header_frame.pack_propagate(False)
-        
-        header_label = tk.Label(header_frame, text=f'🎵 {APP_NAME}', 
-                               font=('Segoe UI', 14, 'bold'), 
-                               bg='#2d2d2d', fg='#6a9cff')
-        header_label.pack(expand=True)
-
-        # Contenuto principale
-        content_frame = tk.Frame(root, bg='#1e1e1e')
-        content_frame.pack(fill='both', expand=True, padx=20, pady=5)
-
-        # Input directory
-        input_frame = tk.Frame(content_frame, bg='#1e1e1e')
-        input_frame.pack(fill='x', pady=(0, 10))
-        
-        tk.Label(input_frame, text='📂 Cartella di input:', 
-                font=('Segoe UI', 11, 'bold'), 
-                bg='#1e1e1e', fg='#ffffff').pack(anchor='w', pady=(0, 5))
-        
-        input_row = tk.Frame(input_frame, bg='#1e1e1e')
-        input_row.pack(fill='x')
-        
-        input_entry = tk.Entry(input_row, textvariable=input_var, 
-                              font=('Segoe UI', 10), bg='#2d2d2d', 
-                              fg='#ffffff', insertbackground='#ffffff',
-                              relief='flat', bd=5)
-        input_entry.pack(side='left', fill='x', expand=True, padx=(0, 10))
-        
-        input_btn = tk.Button(input_row, text='Sfoglia', command=browse_input, 
-                             bg='#6a9cff', fg='white', font=('Segoe UI', 10, 'bold'),
-                             relief='flat', cursor='hand2', padx=20)
-        input_btn.pack(side='right')
-
-        # Output directory
-        output_frame = tk.Frame(content_frame, bg='#1e1e1e')
-        output_frame.pack(fill='x', pady=(0, 15))
-        
-        tk.Label(output_frame, text='💾 Cartella di output:', 
-                font=('Segoe UI', 11, 'bold'), 
-                bg='#1e1e1e', fg='#ffffff').pack(anchor='w', pady=(0, 5))
-        
-        output_row = tk.Frame(output_frame, bg='#1e1e1e')
-        output_row.pack(fill='x')
-        
-        output_entry = tk.Entry(output_row, textvariable=output_var, 
-                               font=('Segoe UI', 10), bg='#2d2d2d', 
-                               fg='#ffffff', insertbackground='#ffffff',
-                               relief='flat', bd=5)
-        output_entry.pack(side='left', fill='x', expand=True, padx=(0, 10))
-        
-        output_btn = tk.Button(output_row, text='Sfoglia', command=browse_output, 
-                              bg='#6a9cff', fg='white', font=('Segoe UI', 10, 'bold'),
-                              relief='flat', cursor='hand2', padx=20)
-        output_btn.pack(side='right')
-
-        # Informazioni
-        info_frame = tk.Frame(content_frame, bg='#2d2d2d', relief='solid', bd=1)
-        info_frame.pack(fill='x', pady=(0, 15))
-        
-        info_text = """ℹ️  Funzionalità del convertitore:
-• Trova tutti i file audio nella cartella di input (MP3, FLAC, WAV, M4A, AAC, OGG)
-• Copia i file MP3 già conformi (192kbps CBR, 44.1kHz) senza modifiche
-• Converte tutti gli altri file al formato ottimale per sistemi radio
-• Mantiene la struttura delle cartelle nell'output"""
-        
-        tk.Label(info_frame, text=info_text, justify='left', 
-                bg='#2d2d2d', fg='#cccccc',
-                font=('Segoe UI', 9)).pack(padx=12, pady=12)
-
-        # Pulsante avvia
-        start_btn = tk.Button(content_frame, text='🚀 AVVIA ELABORAZIONE', 
-                             command=start_process, 
-                             bg='#4caf50', fg='white', 
-                             font=('Segoe UI', 13, 'bold'), 
-                             relief='flat', cursor='hand2',
-                             width=30, height=2)
-        start_btn.pack(pady=(15, 25))
-
-        root.mainloop()
 
     # Avvia con schermata di introduzione
-    root = tk.Tk()
-    root.withdraw()  # Nascondi finestra principale
-    show_splash_screen()
-    root.mainloop()
+    try:
+        show_splash_screen()
+        root.mainloop()
+    except Exception as e:
+        messagebox.showerror("Errore Critico", f"Si è verificato un errore durante l'avvio:\n{e}")
+        print(f"CRITICAL ERROR: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description='Conformer semplificato per Liquidsoap')
@@ -526,4 +579,4 @@ def main():
     conformer.run()
 
 if __name__ == '__main__':
-    main() 
+    main()

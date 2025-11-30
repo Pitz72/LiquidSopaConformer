@@ -1,0 +1,31 @@
+Audio & Metadata Converter - Harmony Edition v1.1.0
+===================================================
+
+Benvenuto in Audio & Metadata Converter (AMC)!
+
+Questo software è stato progettato per risolvere i problemi di compatibilità audio con software di automazione radiofonica come AzuraCast e Liquidsoap.
+
+CARATTERISTICHE PRINCIPALI:
+-------------------------
+*   Converte automaticamente i file audio in MP3 192kbps CBR, 44.1kHz Stereo.
+*   Preserva la struttura delle cartelle originale.
+*   Corregge i metadati e rimuove tag problematici.
+*   Interfaccia grafica semplice e intuitiva con Dark Mode.
+*   Versione portatile: non richiede installazione.
+
+ISTRUZIONI RAPIDE:
+----------------
+1.  Avvia "AudioMetadataConverter.exe" (su Windows) o usa gli script per il tuo sistema operativo.
+2.  Seleziona la cartella contenente i tuoi file audio originali ("Input").
+3.  Seleziona una cartella vuota dove salvare i file convertiti ("Output").
+4.  Clicca su "AVVIA ELABORAZIONE".
+
+SUPPORTO E DONAZIONI:
+-------------------
+Questo software è distribuito gratuitamente. Se ti è utile, considera una donazione per supportare lo sviluppo e Runtime Radio:
+https://paypal.me/runtimeradio
+
+Per maggiori dettagli, consulta il file MANUALE.txt.
+
+Buon lavoro!
+Simone Pizzi & Runtime Radio

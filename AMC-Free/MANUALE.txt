@@ -1,0 +1,52 @@
+MANUALE UTENTE - Audio & Metadata Converter (AMC) v1.1.0
+========================================================
+
+INTRODUZIONE
+------------
+Audio & Metadata Converter è uno strumento professionale sviluppato per ottimizzare le librerie musicali per l'uso in ambienti broadcast, specificamente per software come AzuraCast e Liquidsoap. Questi sistemi richiedono file audio con codifica costante e metadati puliti per evitare blocchi o crash durante la trasmissione.
+
+REQUISITI DI SISTEMA
+------------------
+*   Windows 10/11, macOS 10.15+, o Linux (Ubuntu 20.04+ raccomandato).
+*   FFmpeg installato (su Windows è incluso o rilevato automaticamente).
+*   Circa 100MB di RAM libera durante l'elaborazione.
+
+INSTALLAZIONE
+-------------
+Non è richiesta alcuna installazione.
+*   Windows: Estrai lo ZIP e avvia "AudioMetadataConverter.exe".
+*   macOS/Linux: Estrai lo ZIP, apri il terminale nella cartella ed esegui lo script corrispondente (.sh). Assicurati di avere Python 3 e FFmpeg installati.
+
+GUIDA ALL'USO
+-------------
+1.  **Avvio**: Doppio click sull'eseguibile o avvio da terminale.
+2.  **Selezione Input**: Clicca su "Sfoglia" accanto a "Cartella di input" e seleziona la directory principale della tua musica. Il programma cercherà file anche nelle sottocartelle.
+3.  **Selezione Output**: Clicca su "Sfoglia" accanto a "Cartella di output" e seleziona una destinazione. ATTENZIONE: Usa una cartella diversa da quella di input!
+4.  **Avvio**: Premi il pulsante verde "AVVIA ELABORAZIONE".
+5.  **Processo**:
+    *   La barra di avanzamento mostrerà il progresso.
+    *   I file MP3 già conformi (192kbps, 44.1kHz) verranno copiati direttamente (veloce).
+    *   Gli altri file (FLAC, WAV, M4A, ecc.) verranno convertiti (più lento).
+    *   La struttura delle cartelle verrà ricreata identica nella destinazione.
+6.  **Stop**: Puoi interrompere il processo in qualsiasi momento con il pulsante rosso "STOP".
+
+RISOLUZIONE PROBLEMI
+------------------
+*   **Il programma non parte**: Assicurati di aver estratto tutti i file dallo ZIP. Su Windows, prova ad avviarlo come Amministratore se hai problemi di permessi.
+*   **Conversione lenta**: La conversione audio richiede potenza di calcolo. È normale che ci voglia tempo per grandi librerie.
+*   **Errori**: Controlla il file "conformer.log" nella cartella del programma per dettagli tecnici sugli errori.
+
+NOTE TECNICHE
+-------------
+*   Formato Output: MP3 Constant Bit Rate (CBR) 192kbps.
+*   Sample Rate: 44.1kHz Stereo.
+*   Metadati: I tag ID3 vengono riscritti per garantire compatibilità standard.
+
+LICENZA
+-------
+Software gratuito. Vedi LICENSE.txt nella cartella documentazione per i dettagli completi.
+
+CONTATTI
+--------
+Sviluppato da Simone Pizzi.
+Supporta il progetto: https://paypal.me/runtimeradio
