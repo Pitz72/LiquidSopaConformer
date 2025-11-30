@@ -135,6 +135,143 @@ installer/
 .ipynb_checkpoints/
 *.ipynb
 
+# Audio & Metadata Converter - Harmony Edition v1.0
+# Git ignore file per escludere file non necessari dal repository
+
+# === FILE DI LOG ===
+*.log
+conformer.log
+audio_converter.log
+debug.log
+error.log
+
+# === DIRECTORY DI TEST ===
+test_input/
+test_output/
+temp_test/
+conformer_test_*/
+
+# === FILE TEMPORANEI ===
+*.tmp
+*.temp
+.temp/
+temp/
+
+# === BACKUP E CACHE ===
+*.bak
+*.backup
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# === ENVIRONMENT E CONFIGURAZIONE ===
+.env
+.venv
+venv/
+ENV/
+env/
+.python-version
+.pyenv-version
+
+# === IDE E EDITOR ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# === DIPENDENZE E BUILD ===
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+
+# === PYTEST E TESTING ===
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# === FILE AUDIO DI TEST ===
+# Escludiamo file audio per evitare repository pesanti
+*.mp3
+*.flac
+*.wav
+*.m4a
+*.aac
+*.ogg
+*.wma
+
+# === ECCEZIONI ===
+# Permetti l'icona del software
+!audioconv.png
+!icon.png
+!logo.png
+
+# === FILE DI CONFIGURAZIONE LOCALI ===
+config.local.ini
+settings.local.json
+user_preferences.json
+
+# === OUTPUT DI CONVERSIONE ===
+converted/
+output/
+processed/
+radio_output/
+
+# === DOCUMENTAZIONE BUILD ===
+docs/_build/
+site/
+
+# === SISTEMA OPERATIVO ===
+# Windows
+*.exe
+*.msi
+*.lnk
+desktop.ini
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon?
+
+# Linux
+*.AppImage
+*.deb
+*.rpm
+
+# === SECURITY ===
+# Evita leak di informazioni sensibili
+*.key
+*.pem
+*.p12
+secrets.txt
+credentials.json
+
+# === PROFILING E DEBUG ===
+*.prof
+*.profile
+memory_profiler.log
+
+# === RELEASE E PACKAGING ===
+release/
+package/
+installer/
+*.zip
+*.tar.gz
+*.rar
+
+# === JUPYTER NOTEBOOKS ===
+.ipynb_checkpoints/
+*.ipynb
+
 # === MYPY ===
 .mypy_cache/
 .dmypy.json
@@ -142,3 +279,6 @@ dmypy.json
 
 # Last updated: 2024-12-20
 # Harmony Edition v1.0 
+
+# === DISTRIBUTION ===
+AMC-Premium-Win64/
